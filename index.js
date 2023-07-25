@@ -1,3 +1,5 @@
+import printGame from "./printGame";
+
 const Ship = (size) => {
   let damage = 0;
   const length = size;
@@ -11,6 +13,7 @@ const Ship = (size) => {
     if (damage >= length) {
       sunk = true;
     }
+    return sunk;
   };
 };
 
@@ -116,7 +119,6 @@ const Gameboard = () => {
 
 const Player = () => {
   const board = Gameboard.initializeBoard;
-  const activeShips = 6;
 
   const compTurn = (enemyBoard) => {
     const x = Math.floor(Math.random() * 10);
@@ -135,4 +137,25 @@ const Player = () => {
       alert("ERROR RETURNING ATTACK RESULT");
     }
   };
+};
+
+const gameController = () => {
+  const human = Player();
+  const computer = Player();
+  let playerTurn = true;
+  do {
+    if (playerTurn) {
+      computer.board.receiveAtack(x, y);
+    } else {
+      human.compTurn(human.board);
+    }
+    playerTurn = !playerTurn;
+  } while (human.board.activeShips > 0 && computer.board.activeShips > 0);
+  if (human.board.activeShips === 0) {
+    // Computer won, loser
+  } else if (computer.board.activeShips === 0) {
+    // You won, winner!
+  } else {
+    // I screwed something up
+  }
 };
