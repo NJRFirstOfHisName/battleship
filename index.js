@@ -1,4 +1,4 @@
-import printGame from "./printGame";
+import printGame from "./printGame.js";
 
 const Ship = (size) => {
   let damage = 0;
@@ -15,6 +15,7 @@ const Ship = (size) => {
     }
     return sunk;
   };
+  return { hit, isSunk };
 };
 
 const Gameboard = () => {
@@ -115,10 +116,12 @@ const Gameboard = () => {
     }
     return result;
   };
+  return { initializeBoard, addShip, receiveAtack };
 };
 
 const Player = () => {
-  const board = Gameboard.initializeBoard;
+  const GB = Gameboard();
+  const board = GB.initializeBoard();
 
   const compTurn = (enemyBoard) => {
     const x = Math.floor(Math.random() * 10);
@@ -137,25 +140,30 @@ const Player = () => {
       alert("ERROR RETURNING ATTACK RESULT");
     }
   };
+  return { board, compTurn };
 };
 
 const gameController = () => {
   const human = Player();
   const computer = Player();
-  let playerTurn = true;
-  do {
-    if (playerTurn) {
-      computer.board.receiveAtack(x, y);
-    } else {
-      human.compTurn(human.board);
-    }
-    playerTurn = !playerTurn;
-  } while (human.board.activeShips > 0 && computer.board.activeShips > 0);
-  if (human.board.activeShips === 0) {
-    // Computer won, loser
-  } else if (computer.board.activeShips === 0) {
-    // You won, winner!
-  } else {
-    // I screwed something up
-  }
+  console.log(human.board);
+  printGame(human.board, computer.board);
+  // let playerTurn = true;
+  // do {
+  //   if (playerTurn) {
+  //     computer.board.receiveAtack(x, y);
+  //   } else {
+  //     human.compTurn(human.board);
+  //   }
+  //   playerTurn = !playerTurn;
+  // } while (human.board.activeShips > 0 && computer.board.activeShips > 0);
+  // if (human.board.activeShips === 0) {
+  //   // Computer won, loser
+  // } else if (computer.board.activeShips === 0) {
+  //   // You won, winner!
+  // } else {
+  //   // I screwed something up
+  // }
 };
+
+gameController();

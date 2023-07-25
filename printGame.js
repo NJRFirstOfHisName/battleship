@@ -9,10 +9,10 @@ export default function printGame(pBoard, cBoard) {
         const square = document.createElement("div");
         square.setAttribute(
           "style",
-          "border: 1px solid black; width: 20px; height: 20px;"
+          "border: 1px solid black; width: 40px; height: 40px;"
         );
-        square.className("square");
-        square.innerText = board.board[i][j];
+        square.className = "square";
+        square.innerText = board[i][j];
         row.appendChild(square);
       }
       prtBoard.appendChild(row);
@@ -20,7 +20,7 @@ export default function printGame(pBoard, cBoard) {
     return prtBoard;
   };
 
-  const container = document.querySelector("gameContainer");
+  const container = document.querySelector(".gameContainer");
   container.appendChild(printBoard(pBoard));
   container.appendChild(printBoard(cBoard));
 }
