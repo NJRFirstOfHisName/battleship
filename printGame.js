@@ -1,11 +1,12 @@
 export default function printGame(pBoard, cBoard) {
+  console.log(pBoard);
   const printBoard = (board) => {
     const prtBoard = document.createElement("div");
     prtBoard.className = "prtBoard";
-    for (let i = 1; i < 10; i += 1) {
+    for (let i = 0; i < 10; i += 1) {
       const row = document.createElement("div");
       row.setAttribute("style", "display: flex;");
-      for (let j = 1; j < 10; j += 1) {
+      for (let j = 0; j < 10; j += 1) {
         const square = document.createElement("div");
         square.setAttribute(
           "style",
@@ -37,6 +38,6 @@ export default function printGame(pBoard, cBoard) {
   };
 
   const container = document.querySelector(".gameContainer");
-  container.appendChild(printBoard(pBoard));
-  container.appendChild(printBoard(cBoard));
+  container.appendChild(printBoard(pBoard.board));
+  container.appendChild(printBoard(cBoard.board));
 }

@@ -218,7 +218,7 @@ const gameController = () => {
     );
   }
   console.log(computer.GB.board);
-  printGame(human.GB.board, computer.GB.board);
+  printGame(human.GB, computer.GB);
   // let playerTurn = true;
   // do {
   //   if (playerTurn) {

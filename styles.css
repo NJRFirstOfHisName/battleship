@@ -3,13 +3,15 @@
   background-color: rgb(29, 162, 216);
 }
 
-.hit {
+.hit,
+.ship {
   background-color: red;
 }
 
 .miss {
   background-color: blue;
 }
+
 .prtBoard {
   margin: 20px;
 }
