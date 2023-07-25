@@ -31,16 +31,33 @@ const Gameboard = () => {
         board[i][j] = 0;
       }
     }
-    return board;
+    // return board;
   };
 
   const addShip = (x, y, direction, size) => {
+    if (size === 0) {
+      if (numberOfShips < 1) {
+        size = 5;
+      } else if (numberOfShips < 3) {
+        size = 4;
+      } else if (numberOfShips < 5) {
+        size = 3;
+      } else {
+        size = 2;
+      }
+    }
+    console.log(x, y, direction, size);
     let valid = true;
     switch (direction) {
       case "S":
+        if (x + size > 9) {
+          valid = false;
+          break;
+        }
         for (let i = 0; i < size; i += 1) {
           if (board[x + i][y] !== 0) {
             valid = false;
+            console.log("Ship collision!");
           }
         }
         if (valid) {
@@ -51,6 +68,10 @@ const Gameboard = () => {
         }
         break;
       case "N":
+        if (x - size < 0) {
+          valid = false;
+          break;
+        }
         for (let i = 0; i < size; i += 1) {
           if (board[x - i][y] !== 0) {
             valid = false;
@@ -64,6 +85,10 @@ const Gameboard = () => {
         }
         break;
       case "E":
+        if (y + size > 9) {
+          valid = false;
+          break;
+        }
         for (let i = 0; i < size; i += 1) {
           if (board[x][y + i] !== 0) {
             valid = false;
@@ -77,6 +102,10 @@ const Gameboard = () => {
         }
         break;
       case "W":
+        if (y - size < 0) {
+          valid = false;
+          break;
+        }
         for (let i = 0; i < size; i += 1) {
           if (board[x][y - i] !== 0) {
             valid = false;
@@ -116,12 +145,19 @@ const Gameboard = () => {
     }
     return result;
   };
-  return { initializeBoard, addShip, receiveAtack };
+
+  const moreShips = () => {
+    if (numberOfShips < 7) {
+      return true;
+    }
+    return false;
+  };
+  return { initializeBoard, addShip, receiveAtack, board, moreShips };
 };
 
 const Player = () => {
   const GB = Gameboard();
-  const board = GB.initializeBoard();
+  GB.initializeBoard();
 
   const compTurn = (enemyBoard) => {
     const x = Math.floor(Math.random() * 10);
@@ -140,14 +176,49 @@ const Player = () => {
       alert("ERROR RETURNING ATTACK RESULT");
     }
   };
-  return { board, compTurn };
+  return { GB, compTurn };
 };
 
 const gameController = () => {
   const human = Player();
+  human.GB.addShip(0, 0, "S", 5);
+  human.GB.addShip(6, 0, "S", 2);
+  human.GB.addShip(0, 3, "S", 4);
+  human.GB.addShip(3, 4, "E", 3);
+  human.GB.addShip(9, 9, "W", 3);
+  human.GB.addShip(7, 4, "S", 2);
+  human.GB.addShip(0, 0, "S", 5);
+
+  console.log(human.GB.board);
+
   const computer = Player();
-  console.log(human.board);
-  printGame(human.board, computer.board);
+  console.log(computer.GB);
+  while (computer.GB.moreShips()) {
+    const dir = Math.random() * 4;
+    let direction;
+    if (dir < 1) {
+      direction = "N";
+    } else if (dir < 2) {
+      direction = "E";
+    } else if (dir < 3) {
+      direction = "S";
+    } else if (dir < 4) {
+      direction = "W";
+    } else {
+      console.error("Error assigning computer ship direction");
+    }
+
+    const size = 0;
+
+    computer.GB.addShip(
+      Math.floor(Math.random() * 10),
+      Math.floor(Math.random() * 10),
+      direction,
+      size
+    );
+  }
+  console.log(computer.GB.board);
+  printGame(human.GB.board, computer.GB.board);
   // let playerTurn = true;
   // do {
   //   if (playerTurn) {

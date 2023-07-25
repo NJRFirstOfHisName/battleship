@@ -1,0 +1,15 @@
+.empty,
+.ship {
+  background-color: rgb(29, 162, 216);
+}
+
+.hit {
+  background-color: red;
+}
+
+.miss {
+  background-color: blue;
+}
+.prtBoard {
+  margin: 20px;
+}

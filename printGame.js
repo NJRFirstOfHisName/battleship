@@ -11,8 +11,24 @@ export default function printGame(pBoard, cBoard) {
           "style",
           "border: 1px solid black; width: 40px; height: 40px;"
         );
-        square.className = "square";
-        square.innerText = board[i][j];
+        switch (board[i][j]) {
+          case 0:
+            square.innerText = "";
+            square.className = "square empty";
+            break;
+          case 8:
+            square.innerText = "O";
+            square.className = "square miss";
+            break;
+          case 9:
+            square.innerText = "X";
+            square.className = "square hit";
+            break;
+          default:
+            square.innerText = "";
+            square.className = "square ship";
+            break;
+        }
         row.appendChild(square);
       }
       prtBoard.appendChild(row);
