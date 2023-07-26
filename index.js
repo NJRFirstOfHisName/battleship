@@ -129,19 +129,22 @@ const Gameboard = () => {
 
   const receiveAtack = (x, y) => {
     let result;
-    if (board[x][y] === 0) {
+    const content = board[x][y];
+    if (content === 0) {
       board[x][y] = 8;
       result = "miss";
-    } else if (board[x][y] === 8 || board[x][y] === 9) {
+    } else if (content === 8 || content === 9 || content === -1) {
       result = "repeat";
     } else {
-      const ship = board[x][y];
+      const ship = content;
       ships[ship].hit();
       if (ships[ship].isSunk()) {
         result = "sunk";
         activeShips -= 1;
+        board[x][y] = -1;
       } else {
         result = "hit";
+        board[x][y] = 9;
       }
     }
     return result;
@@ -188,7 +191,6 @@ const Player = () => {
     // } else {
     //   alert("ERROR RETURNING ATTACK RESULT");
     // }
-    console.log(result);
   };
   return { GB, compTurn };
 };
@@ -245,11 +247,9 @@ const gameController = () => {
     printGame(human.GB, computer.GB);
     // } while (human.GB.getActiveShips() > 0 && computer.GB.getActiveShips() > 0);
     if (human.GB.getActiveShips() === 0) {
-      // Computer won, loser
+      alert("COMPUTER BEATS PUNY HUMAN");
     } else if (computer.GB.getActiveShips() === 0) {
-      // You won, winner!
-    } else {
-      // I screwed something up
+      alert("Man triumps over machine!");
     }
   };
 

@@ -25,6 +25,10 @@ export default function printGame(pBoard, cBoard) {
             square.innerText = "X";
             square.className = "square hit";
             break;
+          case -1:
+            square.innerText = "SUNK";
+            square.className = "square sunk";
+            break;
           default:
             if (inBoard.isComp()) {
               square.innerText = "";
