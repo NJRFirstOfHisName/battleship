@@ -22,7 +22,8 @@ const Gameboard = () => {
   const board = [];
   const ships = [];
   let numberOfShips = 0;
-  let activeShips = 6;
+  let activeShips;
+  let comp = false;
 
   const initializeBoard = () => {
     for (let i = 0; i < 10; i += 1) {
@@ -31,11 +32,11 @@ const Gameboard = () => {
         board[i][j] = 0;
       }
     }
-    // return board;
   };
 
   const addShip = (x, y, direction, size) => {
     if (size === 0) {
+      comp = true;
       if (numberOfShips < 1) {
         size = 5;
       } else if (numberOfShips < 3) {
@@ -46,7 +47,6 @@ const Gameboard = () => {
         size = 2;
       }
     }
-    console.log(x, y, direction, size);
     let valid = true;
     switch (direction) {
       case "S":
@@ -124,6 +124,7 @@ const Gameboard = () => {
         break;
     }
     ships[numberOfShips] = Ship(size);
+    activeShips = numberOfShips;
   };
 
   const receiveAtack = (x, y) => {
@@ -152,29 +153,42 @@ const Gameboard = () => {
     }
     return false;
   };
-  return { initializeBoard, addShip, receiveAtack, board, moreShips };
+
+  const getBoard = () => board;
+  const isComp = () => comp;
+  const getActiveShips = () => activeShips;
+  return {
+    initializeBoard,
+    addShip,
+    receiveAtack,
+    moreShips,
+    getBoard,
+    isComp,
+    getActiveShips,
+  };
 };
 
 const Player = () => {
   const GB = Gameboard();
   GB.initializeBoard();
 
-  const compTurn = (enemyBoard) => {
-    const x = Math.floor(Math.random() * 10);
-    const y = Math.floor(Math.random() * 10);
+  const compTurn = () => {
     let result;
     do {
-      result = enemyBoard.receiveAtack(x, y);
+      const x = Math.floor(Math.random() * 10);
+      const y = Math.floor(Math.random() * 10);
+      result = GB.receiveAtack(x, y);
     } while (result === "repeat");
-    if (result === "miss") {
-      alert("MISS");
-    } else if (result === "hit") {
-      alert("HIT");
-    } else if (result === "sunk") {
-      alert("SHIP SUNK");
-    } else {
-      alert("ERROR RETURNING ATTACK RESULT");
-    }
+    // if (result === "miss") {
+    //   console.log("miss");
+    // } else if (result === "hit") {
+    //   console.log("HIT");
+    // } else if (result === "sunk") {
+    //   console.log("SHIP SUNK");
+    // } else {
+    //   alert("ERROR RETURNING ATTACK RESULT");
+    // }
+    console.log(result);
   };
   return { GB, compTurn };
 };
@@ -189,7 +203,7 @@ const gameController = () => {
   human.GB.addShip(7, 4, "S", 2);
   human.GB.addShip(0, 0, "S", 5);
 
-  console.log(human.GB.board);
+  console.log(human.GB.getBoard());
 
   const computer = Player();
   console.log(computer.GB);
@@ -217,24 +231,32 @@ const gameController = () => {
       size
     );
   }
-  console.log(computer.GB.board);
+  console.log(computer.GB.getBoard());
   printGame(human.GB, computer.GB);
-  // let playerTurn = true;
-  // do {
-  //   if (playerTurn) {
-  //     computer.board.receiveAtack(x, y);
-  //   } else {
-  //     human.compTurn(human.board);
-  //   }
-  //   playerTurn = !playerTurn;
-  // } while (human.board.activeShips > 0 && computer.board.activeShips > 0);
-  // if (human.board.activeShips === 0) {
-  //   // Computer won, loser
-  // } else if (computer.board.activeShips === 0) {
-  //   // You won, winner!
-  // } else {
-  //   // I screwed something up
-  // }
+  let playerTurn = true;
+  const playRound = () => {
+    // do {
+    if (playerTurn) {
+      computer.compTurn();
+    } else {
+      human.compTurn();
+    }
+    playerTurn = !playerTurn;
+    printGame(human.GB, computer.GB);
+    // } while (human.GB.getActiveShips() > 0 && computer.GB.getActiveShips() > 0);
+    if (human.GB.getActiveShips() === 0) {
+      // Computer won, loser
+    } else if (computer.GB.getActiveShips() === 0) {
+      // You won, winner!
+    } else {
+      // I screwed something up
+    }
+  };
+
+  const btn = document.querySelector(".button");
+  btn.addEventListener("click", () => {
+    playRound();
+  });
 };
 
 gameController();

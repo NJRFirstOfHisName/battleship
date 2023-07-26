@@ -1,6 +1,6 @@
 export default function printGame(pBoard, cBoard) {
-  console.log(pBoard);
-  const printBoard = (board) => {
+  const printBoard = (inBoard) => {
+    const board = inBoard.getBoard();
     const prtBoard = document.createElement("div");
     prtBoard.className = "prtBoard";
     for (let i = 0; i < 10; i += 1) {
@@ -26,8 +26,13 @@ export default function printGame(pBoard, cBoard) {
             square.className = "square hit";
             break;
           default:
-            square.innerText = "";
-            square.className = "square ship";
+            if (inBoard.isComp()) {
+              square.innerText = "";
+              square.className = "square empty";
+            } else {
+              square.innerText = "SHIP";
+              square.className = "square ship";
+            }
             break;
         }
         row.appendChild(square);
@@ -38,6 +43,7 @@ export default function printGame(pBoard, cBoard) {
   };
 
   const container = document.querySelector(".gameContainer");
-  container.appendChild(printBoard(pBoard.board));
-  container.appendChild(printBoard(cBoard.board));
+  container.innerHTML = "";
+  container.appendChild(printBoard(pBoard));
+  container.appendChild(printBoard(cBoard));
 }
