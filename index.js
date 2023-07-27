@@ -182,15 +182,6 @@ const Player = () => {
       const y = Math.floor(Math.random() * 10);
       result = GB.receiveAtack(x, y);
     } while (result === "repeat");
-    // if (result === "miss") {
-    //   console.log("miss");
-    // } else if (result === "hit") {
-    //   console.log("HIT");
-    // } else if (result === "sunk") {
-    //   console.log("SHIP SUNK");
-    // } else {
-    //   alert("ERROR RETURNING ATTACK RESULT");
-    // }
   };
   return { GB, compTurn };
 };
@@ -203,12 +194,9 @@ const gameController = () => {
   human.GB.addShip(3, 4, "E", 3);
   human.GB.addShip(9, 9, "W", 3);
   human.GB.addShip(7, 4, "S", 2);
-  human.GB.addShip(0, 0, "S", 5);
-
-  console.log(human.GB.getBoard());
+  human.GB.addShip(5, 8, "S", 2);
 
   const computer = Player();
-  console.log(computer.GB);
   while (computer.GB.moreShips()) {
     const dir = Math.random() * 4;
     let direction;
@@ -218,10 +206,8 @@ const gameController = () => {
       direction = "E";
     } else if (dir < 3) {
       direction = "S";
-    } else if (dir < 4) {
-      direction = "W";
     } else {
-      console.error("Error assigning computer ship direction");
+      direction = "W";
     }
 
     const size = 0;
@@ -233,30 +219,45 @@ const gameController = () => {
       size
     );
   }
-  console.log(computer.GB.getBoard());
-  printGame(human.GB, computer.GB);
-  let playerTurn = true;
-  const playRound = () => {
-    // do {
-    if (playerTurn) {
-      computer.compTurn();
-    } else {
+  printGame(human.GB);
+  printGame(computer.GB);
+
+  const playerTurn = (square) => {
+    const location = square.id;
+    const x = location.slice(0, 1);
+    const y = location.slice(1);
+    const result = computer.GB.receiveAtack(x, y);
+    if (result !== "repeat") {
       human.compTurn();
+      printGame(human.GB);
     }
-    playerTurn = !playerTurn;
-    printGame(human.GB, computer.GB);
-    // } while (human.GB.getActiveShips() > 0 && computer.GB.getActiveShips() > 0);
+
+    return result;
+  };
+
+  const playRound = () => {
     if (human.GB.getActiveShips() === 0) {
       alert("COMPUTER BEATS PUNY HUMAN");
     } else if (computer.GB.getActiveShips() === 0) {
-      alert("Man triumps over machine!");
+      alert("Man triumphs over machine!");
     }
   };
 
-  const btn = document.querySelector(".button");
-  btn.addEventListener("click", () => {
-    playRound();
+  const compBoard = document.querySelector(".comp");
+  const compSquares = compBoard.querySelectorAll(".square");
+  compSquares.forEach((square) => {
+    square.addEventListener("click", () => {
+      const result = playerTurn(square);
+      if (result !== "repeat") {
+        square.className = result;
+      }
+    });
   });
+
+  // const btn = document.querySelector(".button");
+  // btn.addEventListener("click", () => {
+  //   playRound();
+  // });
 };
 
 gameController();

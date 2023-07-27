@@ -3,15 +3,22 @@
   background-color: rgb(29, 162, 216);
 }
 
-.hit,
 .ship {
   background-color: red;
+}
+
+.hit {
+  background-color: rgb(180, 0, 0);
 }
 
 .miss {
   background-color: blue;
 }
 
-.prtBoard {
+.sunk {
+  background-color: black;
+}
+
+.board {
   margin: 20px;
 }
