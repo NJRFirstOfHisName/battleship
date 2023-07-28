@@ -154,7 +154,7 @@ const Gameboard = () => {
         console.log(board);
       } else {
         result = "hit";
-        board[x][y] = -[x][y];
+        board[x][y] = -board[x][y];
       }
     }
     return result;
