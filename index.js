@@ -133,9 +133,9 @@ const Gameboard = () => {
     let result;
     const content = board[x][y];
     if (content === 0) {
-      board[x][y] = 8;
+      board[x][y] = 9;
       result = "miss";
-    } else if (content === 8 || content === 9 || content === -1) {
+    } else if (content === 9 || content < 0) {
       result = "repeat";
     } else {
       const ship = content;
@@ -154,7 +154,7 @@ const Gameboard = () => {
         console.log(board);
       } else {
         result = "hit";
-        board[x][y] = 9;
+        board[x][y] = -[x][y];
       }
     }
     return result;
