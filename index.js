@@ -1,4 +1,5 @@
 import printGame from "./printGame.js";
+import setSquare from "./setSquare.js";
 
 const Ship = (size) => {
   let damage = 0;
@@ -145,7 +146,7 @@ const Gameboard = () => {
         activeShips -= 1;
         board.forEach((row, rowIndex) => {
           row.forEach((square, squareIndex) => {
-            if (square === content) {
+            if (square === -content) {
               board[rowIndex][squareIndex] = -1;
             }
           });
@@ -194,11 +195,14 @@ const Player = () => {
     } while (result === "repeat");
   };
 
-  const playerTurn = (sqID) => {
-    const location = sqID;
+  const playerTurn = (square) => {
+    const location = square.id;
     const x = location.slice(0, 1);
     const y = location.slice(1);
     const result = GB.receiveAtack(x, y);
+    if (result !== "repeat") {
+      setSquare(GB, square, x, y);
+    }
 
     return result;
   };
@@ -248,11 +252,12 @@ const gameController = () => {
   const compSquares = compBoard.querySelectorAll(".square");
   compSquares.forEach((square) => {
     square.addEventListener("click", () => {
-      const result = computer.playerTurn(square.id);
+      const result = computer.playerTurn(square);
       if (result !== "repeat") {
         human.compTurn();
+        console.log(`human ${human.GB.getBoard()}`);
         printGame(human.GB);
-        square.className = result;
+        // square.className = result;
         if (human.GB.getActiveShips() === 0) {
           alert("COMPUTER BEATS PUNY HUMAN");
         } else if (computer.GB.getActiveShips() === 0) {
