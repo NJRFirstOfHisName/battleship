@@ -143,7 +143,15 @@ const Gameboard = () => {
       if (ships[ship].isSunk()) {
         result = "sunk";
         activeShips -= 1;
+        board.forEach((row, rowIndex) => {
+          row.forEach((square, squareIndex) => {
+            if (square === content) {
+              board[rowIndex][squareIndex] = -1;
+            }
+          });
+        });
         board[x][y] = -1;
+        console.log(board);
       } else {
         result = "hit";
         board[x][y] = 9;

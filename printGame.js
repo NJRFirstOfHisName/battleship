@@ -39,6 +39,7 @@ export default function printGame(GB) {
           }
           break;
       }
+      square.className += ` ${board[i][j]}`;
       row.appendChild(square);
     }
     prtBoard.appendChild(row);
