@@ -145,14 +145,13 @@ const Gameboard = () => {
         result = "sunk";
         activeShips -= 1;
         board.forEach((row, rowIndex) => {
-          row.forEach((square, squareIndex) => {
-            if (square === -content) {
-              board[rowIndex][squareIndex] = -1;
+          row.forEach((entry, columnIndex) => {
+            if (entry === -content) {
+              board[rowIndex][columnIndex] = -9;
             }
           });
         });
-        board[x][y] = -1;
-        console.log(board);
+        board[x][y] = -9;
       } else {
         result = "hit";
         board[x][y] = -board[x][y];
@@ -201,7 +200,7 @@ const Player = () => {
     const y = location.slice(1);
     const result = GB.receiveAtack(x, y);
     if (result !== "repeat") {
-      setSquare(GB, square, x, y);
+      square = setSquare(GB, square, x, y);
     }
 
     return result;
@@ -244,7 +243,6 @@ const gameController = () => {
   }
   printGame(human.GB);
   printGame(computer.GB);
-  console.log(computer.GB.getBoard());
 
   const playRound = () => {};
 
@@ -253,11 +251,17 @@ const gameController = () => {
   compSquares.forEach((square) => {
     square.addEventListener("click", () => {
       const result = computer.playerTurn(square);
+      if (result === "sunk") {
+        compSquares.forEach((sq) => {
+          const location = sq.id;
+          const x = location.slice(0, 1);
+          const y = location.slice(1);
+          setSquare(computer.GB, sq, x, y);
+        });
+      }
       if (result !== "repeat") {
         human.compTurn();
-        console.log(`human ${human.GB.getBoard()}`);
         printGame(human.GB);
-        // square.className = result;
         if (human.GB.getActiveShips() === 0) {
           alert("COMPUTER BEATS PUNY HUMAN");
         } else if (computer.GB.getActiveShips() === 0) {
