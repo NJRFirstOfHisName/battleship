@@ -1,3 +1,8 @@
+.gameContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 .empty,
 .ship {
   background-color: rgb(29, 162, 216);

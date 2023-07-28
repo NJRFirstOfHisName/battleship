@@ -32,7 +32,7 @@ export default function printGame(GB) {
         default:
           if (GB.isComp()) {
             square.innerText = "";
-            square.className = "square empty";
+            square.className = "square ship";
           } else {
             square.innerText = "";
             square.className = "square ship";
