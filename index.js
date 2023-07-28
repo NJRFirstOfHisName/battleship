@@ -256,10 +256,11 @@ const gameController = () => {
           const location = sq.id;
           const x = location.slice(0, 1);
           const y = location.slice(1);
-          setSquare(computer.GB, sq, x, y);
+          if (computer.GB.getBoard()[x][y] === -9) {
+            setSquare(computer.GB, sq, x, y);
+          }
         });
-      }
-      if (result !== "repeat") {
+      } else if (result !== "repeat") {
         human.compTurn();
         printGame(human.GB);
         if (human.GB.getActiveShips() === 0) {
