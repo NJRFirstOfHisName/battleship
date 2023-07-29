@@ -260,13 +260,15 @@ const gameController = () => {
             setSquare(computer.GB, sq, x, y);
           }
         });
-      } else if (result !== "repeat") {
+        if (computer.GB.getActiveShips() === 0) {
+          alert("Man triumphs over machine!");
+        }
+      }
+      if (result !== "repeat") {
         human.compTurn();
         printGame(human.GB);
         if (human.GB.getActiveShips() === 0) {
           alert("COMPUTER BEATS PUNY HUMAN");
-        } else if (computer.GB.getActiveShips() === 0) {
-          alert("Man triumphs over machine!");
         }
       }
     });
