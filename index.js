@@ -44,7 +44,7 @@ const Gameboard = () => {
         length = 5;
       } else if (numberOfShips < 3) {
         length = 4;
-      } else if (numberOfShips < 5) {
+      } else if (numberOfShips < 6) {
         length = 3;
       } else {
         length = 2;
@@ -224,13 +224,15 @@ const Gameboard = () => {
     const pSquares = playerBoard.querySelectorAll(".square");
     pSquares.forEach((square) => {
       square.addEventListener("dragstart", (e) => {
-        e.stopImmediatePropagation();
-        const location = e.target.id;
-        xStart = Number(location.slice(0, 1));
-        yStart = Number(location.slice(1));
-        length = shipsNeeded[shipsPlaced];
+        if (shipsPlaced < shipsNeeded.length) {
+          e.stopImmediatePropagation();
+          const location = e.target.id;
+          xStart = Number(location.slice(0, 1));
+          yStart = Number(location.slice(1));
+          length = shipsNeeded[shipsPlaced];
 
-        e.target.classList.add(".drag-valid");
+          e.target.classList.add(".drag-valid");
+        }
       });
       square.addEventListener("dragenter", (e) => {
         const highlightSquares = document.querySelectorAll(".drag-valid");
@@ -286,7 +288,7 @@ const Gameboard = () => {
   };
 
   const moreShips = () => {
-    if (numberOfShips < 7) {
+    if (numberOfShips < 8) {
       return true;
     }
     return false;
@@ -336,14 +338,7 @@ const Player = () => {
 
 const gameController = () => {
   const player = Player();
-  const fleet = [5, 4, 4, 3, 3, 2, 2];
-  // player.GB.addShip(0, 0, "S", 5);
-  // player.GB.addShip(6, 0, "E", 4);
-  // player.GB.addShip(0, 3, "S", 4);
-  // player.GB.addShip(3, 4, "E", 3);
-  // player.GB.addShip(9, 9, "W", 3);
-  // player.GB.addShip(7, 4, "S", 2);
-  // player.GB.addShip(5, 8, "S", 2);
+  const fleet = [5, 4, 4, 3, 3, 3, 2, 2];
 
   const computer = Player();
   while (computer.GB.moreShips()) {
