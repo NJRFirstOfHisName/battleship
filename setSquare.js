@@ -1,3 +1,4 @@
+// Assigns classes to squares based on the board so they display properly.
 export default function setSquare(GB, square, x, y) {
   const newSquare = square;
   const board = GB.getBoard();
@@ -15,6 +16,7 @@ export default function setSquare(GB, square, x, y) {
         newSquare.className = "sunk";
         break;
       default:
+        // Masks CPU ships from the player
         if (GB.isComp()) {
           newSquare.className = "square ship";
         } else {

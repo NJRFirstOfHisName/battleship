@@ -2,15 +2,18 @@
 import printGame from "./printGame.js";
 import setSquare from "./setSquare.js";
 
+// Creates new ships to be stored in an array and returns functions to add damage and check whether it's sunken.
 const Ship = (size) => {
   let damage = 0;
   const length = size;
   let sunk = false;
 
+  // Adds damage to the ship if it's hit by Gameboard.receiveAttack.
   const hit = () => {
     damage += 1;
   };
 
+  // Checks the existing damage against the size of the ship to determine whether it's sunken.
   const isSunk = () => {
     if (damage >= length) {
       sunk = true;
@@ -20,13 +23,20 @@ const Ship = (size) => {
   return { hit, isSunk };
 };
 
+// Creates a Gameboard object. One is given to each player and is used to track the status of each player's game.
 const Gameboard = () => {
+  // Used to track the game board on the back end, becomes an array representation of the game in progress.
   const board = [];
+  // Holds all Ship objects.
   const ships = [];
+  // Used to track how many ships have been placed, as well as being used to number each new ship.
   let numberOfShips = 0;
+  // Used during the course of the game to check how many ships are still in play.
   let activeShips;
+  // Remains false for the player's board and true for the computer's board.
   let comp = false;
 
+  // Fills board[] with a 2-dimensional array containing entirely 0's, used to indicate empty squares
   const initializeBoard = () => {
     for (let i = 0; i < 10; i += 1) {
       board[i] = [];
@@ -36,8 +46,13 @@ const Gameboard = () => {
     }
   };
 
+  // Takes the starting coordinates, direction, and size of a potential ship and attempts to place it in board.
   const addShip = (x, y, direction, size) => {
     let length = size;
+    let valid = true;
+
+    // A size of 0 is used to generate the CPU's ships. First sets comp to true (where it remains),
+    // then determines the size of the ship based on how many have already been placed.
     if (size === 0) {
       comp = true;
       if (numberOfShips < 1) {
@@ -50,7 +65,12 @@ const Gameboard = () => {
         length = 2;
       }
     }
-    let valid = true;
+
+    /* Checks whether a given ship placement is valid. First determines which direction the ship is facing, 
+    then checks whether the ship would run off the edge of the board[], then checks whether there are existing
+    ships in the way of the new ship's placement, and finally places the ship on the board. Each ship is given
+    a number to help track them, starting with 1 and incrementing with each new ship, and is placed on the board[]
+    as a line of this number. */
     switch (direction) {
       case "S":
         if (x + length > 9) {
@@ -124,12 +144,15 @@ const Gameboard = () => {
       default:
         break;
     }
+    // If the ship passes all of the above checks, creates a new Ship and places it in ships[].
     if (valid) {
       ships[numberOfShips] = Ship(length);
     }
+    // The last time this is called, activeShips will equal the full number of ships placed.
     activeShips = numberOfShips;
   };
 
+  // Used to place the player's ships in the DOM.
   const placeShips = (fleet) => {
     const shipsNeeded = fleet;
     const playerBoard = document.querySelector(".player");
@@ -140,6 +163,7 @@ const Gameboard = () => {
     let shipsPlaced = 0;
     let valid = false;
 
+    // Used by dragEnterEvent to highlight divs that are valid locations for ships.
     function highlightSquare(square) {
       if (square.classList.contains("empty")) {
         square.classList.add("drag-valid");
@@ -149,10 +173,18 @@ const Gameboard = () => {
       }
     }
 
+    // Called whenever a user starts a drag and moves over another div.
     function dragEnterEvent(e) {
+      // Takes the id of the div that has been entered and uses it to determine its coordinates.
       const location = e.target.id;
       const xNew = Number(location.slice(0, 1));
       const yNew = Number(location.slice(1));
+
+      /* More nested if statements! To start, checks whether the new div is in line with the dragstart div.
+      Then determines which axis (relative to dragstart) it lies on, whether it's above or below on the axis,
+      and finally if the ship would run off the edge of the board. If the potential location passes all of the
+      above checks, starts highlighting divs to indicate where the ship would lie. If it encounters a ship
+      in the way, valid is switched back to false and all active divs are cleared. */
       if (xStart === xNew || yStart === yNew) {
         if (xStart === xNew) {
           if (yStart > yNew) {
@@ -206,23 +238,33 @@ const Gameboard = () => {
       }
     }
 
+    /* Called when the user releases a drag. If (valid), indicating that the ship is in a valid location, 
+     turns all highlighted divs into ships, then sends the ship to Gameboard. */
     function dragEndEvent() {
       const highlightSquares = document.querySelectorAll(".drag-valid");
+      const startSquare = document.querySelector(".drag-start");
       if (valid) {
         highlightSquares.forEach((sq) => {
           sq.className = "ship";
         });
+        startSquare.className = "ship";
         addShip(xStart, yStart, direction, length);
         shipsPlaced += 1;
-      } else {
+      }
+      // If (!valid), clears all highlighted divs.
+      else {
         highlightSquares.forEach((sq) => {
           sq.className = "square empty";
         });
+        startSquare.className = "square empty";
       }
     }
 
+    // Grabs all empty divs and adds drag and drop listeners to them.
     const pSquares = playerBoard.querySelectorAll(".square");
     pSquares.forEach((square) => {
+      // When a drag is started, takes the clicked div and saves its location along the x and y axes,
+      // then highlights it.
       square.addEventListener("dragstart", (e) => {
         e.stopImmediatePropagation();
         if (shipsPlaced < shipsNeeded.length) {
@@ -231,9 +273,10 @@ const Gameboard = () => {
           yStart = Number(location.slice(1));
           length = shipsNeeded[shipsPlaced];
 
-          e.target.classList.add(".drag-valid");
+          e.target.classList.add("drag-start");
         }
       });
+      // When a new div is dragged over, clears all highlighted divs (except the dragstart) and calls dragEnterEvent.
       square.addEventListener("dragenter", (e) => {
         e.stopImmediatePropagation();
         const highlightSquares = document.querySelectorAll(".drag-valid");
@@ -244,23 +287,33 @@ const Gameboard = () => {
         dragEnterEvent(e);
       });
     });
+    // When the drag ends, calls dragEndEvent.
     playerBoard.addEventListener("dragend", (e) => {
       e.stopImmediatePropagation();
       dragEndEvent();
     });
   };
 
+  // Used when one side attacks the other.
   const receiveAtack = (x, y) => {
     let result;
+
+    // Checks board to see what is in the square that's being attacked.
     const content = board[x][y];
+    // If the square is empty, assigns it the 'miss' value.
     if (content === 0) {
       board[x][y] = 9;
       result = "miss";
+      // If the square has already been attacked, does nothing but return 'repeat'.
     } else if (content === 9 || content < 0) {
       result = "repeat";
+      // If neither of the above conditions is met the square must contain a ship.
     } else {
+      // Sends hit() to the ship.
       const ship = content;
       ships[ship].hit();
+      // If the attack sinks the ship, reduces activeShips by 1 and replaces all squares the ship takes up
+      // with the 'sunk' value.
       if (ships[ship].isSunk()) {
         result = "sunk";
         activeShips -= 1;
@@ -272,6 +325,7 @@ const Gameboard = () => {
           });
         });
         board[x][y] = -9;
+        // If the attack doesn't sink the ship, replaces the 'ship' value with its negative to indicate it's been hit.
       } else {
         result = "hit";
         board[x][y] = -board[x][y];
@@ -280,6 +334,7 @@ const Gameboard = () => {
     return result;
   };
 
+  // Used when generating the CPU board to see if more ships are needed.
   const moreShips = () => {
     if (numberOfShips < 7) {
       return true;
@@ -302,24 +357,34 @@ const Gameboard = () => {
   };
 };
 
+// A Player object is generated for each side and contains their Gameboards
 const Player = () => {
   const GB = Gameboard();
   GB.initializeBoard();
+  // Used by the CPU to track where it last hit a ship
   const hit = [];
 
+  // Called on the player's board to semi-randomly attack a square.
   const compTurn = () => {
     let result;
     let x;
     let y;
     let repeats = 0;
+    // Loop to generate coordinates for attack. Repeats until it hits an unattacked square.
     do {
+      // If the last attack hits a ship, tries attacking the spaces adjacent to its last attack until
+      // it gets another hit or until it hits its 10th loop.
       if (hit.length > 0) {
+        // Randomly assigns a 0 or 1 for the axis on which to shift.
         const axis = Math.floor(Math.random() * 2);
         let temp;
+        // If the previous hit was on the edge of the board and the axis is perpendicular to the edge, makes the
+        // next hit fall inside the board.
         if (hit[axis] === 0) {
           temp = 1;
         } else if (hit[axis] === 9) {
           temp = 8;
+          // If the above isn't true, makes the next hit be either one greater or one lesser along the axis.
         } else {
           const direction = Math.random() - 0.5;
           if (direction < 0) {
@@ -328,6 +393,7 @@ const Player = () => {
             temp = hit[axis] + 1;
           }
         }
+        // Assigns the coordinates for the next attack.
         if (axis < 1) {
           x = temp;
           y = hit[1];
@@ -335,10 +401,14 @@ const Player = () => {
           x = hit[0];
           y = temp;
         }
+        // If the previous attack wasn't a hit, generates random attack coordinates.
       } else {
         x = Math.floor(Math.random() * 10);
         y = Math.floor(Math.random() * 10);
       }
+      /* Gets the result of the attack. If it's a hit, clears hit[] and assigns it the new coordinates. If
+        it sunk a ship, or if the hit loop has occured 10 times, clears hit[]. If it's a repeat, increments
+        repeats so that the hit loop doesn't occur infinitely */
       result = GB.receiveAtack(x, y);
       if (result === "hit") {
         hit.length = 0;
@@ -351,6 +421,7 @@ const Player = () => {
     } while (result === "repeat");
   };
 
+  // Called on the CPU to recieve an attack from the player.
   const playerTurn = (square) => {
     const location = square.id;
     const x = location.slice(0, 1);
@@ -365,19 +436,27 @@ const Player = () => {
   return { GB, compTurn, playerTurn };
 };
 
+// Initializes and controls the game flow.
 const gameController = () => {
-  const player = Player();
+  // fleet controls the size and number of the player's ships.
   const fleet = [5, 4, 4, 3, 3, 2, 2];
-  player.GB.addShip(0, 0, "S", 5);
-  player.GB.addShip(6, 0, "E", 4);
-  player.GB.addShip(0, 3, "S", 4);
-  player.GB.addShip(3, 4, "E", 3);
-  player.GB.addShip(9, 9, "W", 3);
-  player.GB.addShip(7, 4, "S", 2);
-  player.GB.addShip(5, 8, "S", 2);
+  // Creates a Player for the player, prints their empty board, and allows them to place their ships.
+  const player = Player();
+  printGame(player.GB);
+  player.GB.placeShips(fleet);
 
+  // player.GB.addShip(0, 0, "S", 5);
+  // player.GB.addShip(6, 0, "E", 4);
+  // player.GB.addShip(0, 3, "S", 4);
+  // player.GB.addShip(3, 4, "E", 3);
+  // player.GB.addShip(9, 9, "W", 3);
+  // player.GB.addShip(7, 4, "S", 2);
+  // player.GB.addShip(5, 8, "S", 2);
+
+  // Creates a Player for the CPU and generates its ships.
   const computer = Player();
   while (computer.GB.moreShips()) {
+    // Randomly generates the direction the CPU's ships face.
     const dir = Math.random() * 4;
     let direction;
     if (dir < 1) {
@@ -390,8 +469,10 @@ const gameController = () => {
       direction = "W";
     }
 
+    // Used to tell addShip that these ships are for the CPU.
     const size = 0;
 
+    // Attempts to place a ship at the randomly generated location.
     computer.GB.addShip(
       Math.floor(Math.random() * 10),
       Math.floor(Math.random() * 10),
@@ -399,14 +480,17 @@ const gameController = () => {
       size
     );
   }
-  printGame(player.GB);
   printGame(computer.GB);
 
+  // Adds EventListeners to all unattacked divs on the computer's board.
   const compBoard = document.querySelector(".comp");
   const compSquares = compBoard.querySelectorAll(".square");
   compSquares.forEach((square) => {
     square.addEventListener("click", () => {
+      // When a listener is triggered, attacks the computer's board at the player's selected point.
+      // If the player somehow manages to attack an attacked space, repeats until a fresh one is clicked.
       const result = computer.playerTurn(square);
+      // If the attack sinks the computer's ship, goes through each square of the ship and displays it as sunk.
       if (result === "sunk") {
         compSquares.forEach((sq) => {
           const location = sq.id;
@@ -416,11 +500,13 @@ const gameController = () => {
             setSquare(computer.GB, sq, x, y);
           }
         });
+        // If the last CPU ship has been sunken, congratulates the player!
         if (computer.GB.getActiveShips() === 0) {
           alert("Man triumphs over machine!");
         }
       }
       if (result !== "repeat") {
+        // After the player has taken a valid turn, the computer takes its turn.
         player.compTurn();
         printGame(player.GB);
         if (player.GB.getActiveShips() === 0) {
@@ -429,7 +515,6 @@ const gameController = () => {
       }
     });
   });
-  // player.GB.placeShips(fleet);
 };
 
 gameController();
