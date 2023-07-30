@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import printGame from "./printGame.js";
 import setSquare from "./setSquare.js";
 
@@ -36,98 +37,220 @@ const Gameboard = () => {
   };
 
   const addShip = (x, y, direction, size) => {
+    console.log(x, y, direction, size);
+    let length = size;
     if (size === 0) {
       comp = true;
       if (numberOfShips < 1) {
-        size = 5;
+        length = 5;
       } else if (numberOfShips < 3) {
-        size = 4;
+        length = 4;
       } else if (numberOfShips < 5) {
-        size = 3;
+        length = 3;
       } else {
-        size = 2;
+        length = 2;
       }
     }
     let valid = true;
     switch (direction) {
       case "S":
-        if (x + size > 9) {
+        if (x + length > 9) {
           valid = false;
           break;
         }
-        for (let i = 0; i < size; i += 1) {
+        for (let i = 0; i < length; i += 1) {
           if (board[x + i][y] !== 0) {
             valid = false;
-            console.log("Ship collision!");
           }
         }
         if (valid) {
           numberOfShips += 1;
-          for (let i = 0; i < size; i += 1) {
+          for (let i = 0; i < length; i += 1) {
             board[x + i][y] = numberOfShips;
           }
         }
         break;
       case "N":
-        if (x - size < 0) {
+        if (x - length < 0) {
           valid = false;
           break;
         }
-        for (let i = 0; i < size; i += 1) {
+        for (let i = 0; i < length; i += 1) {
           if (board[x - i][y] !== 0) {
             valid = false;
           }
         }
         if (valid) {
           numberOfShips += 1;
-          for (let i = 0; i < size; i += 1) {
+          for (let i = 0; i < length; i += 1) {
             board[x - i][y] = numberOfShips;
           }
         }
         break;
       case "E":
-        if (y + size > 9) {
+        if (y + length > 9) {
           valid = false;
           break;
         }
-        for (let i = 0; i < size; i += 1) {
+        for (let i = 0; i < length; i += 1) {
           if (board[x][y + i] !== 0) {
             valid = false;
           }
         }
         if (valid) {
           numberOfShips += 1;
-          for (let i = 0; i < size; i += 1) {
+          for (let i = 0; i < length; i += 1) {
             board[x][y + i] = numberOfShips;
           }
         }
         break;
       case "W":
-        if (y - size < 0) {
+        if (y - length < 0) {
           valid = false;
           break;
         }
-        for (let i = 0; i < size; i += 1) {
+        for (let i = 0; i < length; i += 1) {
           if (board[x][y - i] !== 0) {
             valid = false;
           }
         }
         if (valid) {
           numberOfShips += 1;
-          for (let i = 0; i < size; i += 1) {
+          for (let i = 0; i < length; i += 1) {
             board[x][y - i] = numberOfShips;
           }
         }
         break;
 
       default:
-        console.error("Invalid direction");
         break;
     }
     if (valid) {
-      ships[numberOfShips] = Ship(size);
+      ships[numberOfShips] = Ship(length);
     }
     activeShips = numberOfShips;
+    console.log(ships);
+  };
+
+  const placeShips = (fleet) => {
+    const shipsNeeded = fleet;
+    const playerBoard = document.querySelector(".player");
+    let xStart;
+    let yStart;
+    let direction;
+    let length;
+    let shipsPlaced = 0;
+    let valid = false;
+
+    function highlightSquare(square) {
+      if (square.classList.contains("empty")) {
+        square.classList.add("drag-valid");
+        valid = true;
+      } else {
+        valid = false;
+      }
+    }
+
+    function dragEnterEvent(e) {
+      const location = e.target.id;
+      const xNew = Number(location.slice(0, 1));
+      const yNew = Number(location.slice(1));
+      if (xStart === xNew || yStart === yNew) {
+        if (xStart === xNew) {
+          if (yStart > yNew) {
+            if (yStart - (length - 1) >= 0) {
+              direction = "W";
+              valid = true;
+              for (let i = 0; i < length; i += 1) {
+                const square = document.getElementById(`${xNew}${yStart - i}`);
+                if (valid) {
+                  highlightSquare(square);
+                }
+              }
+            }
+          } else if (yStart < yNew) {
+            if (yStart + (length - 1) < 10) {
+              direction = "E";
+              valid = true;
+              for (let i = 0; i < length; i += 1) {
+                const square = document.getElementById(`${xNew}${yStart + i}`);
+                if (valid) {
+                  highlightSquare(square);
+                }
+              }
+            }
+          }
+        } else if (yStart === yNew) {
+          if (xStart > xNew) {
+            if (xStart - (length - 1) >= 0) {
+              direction = "N";
+              valid = true;
+              for (let i = 0; i < length; i += 1) {
+                const square = document.getElementById(`${xStart - i}${yNew}`);
+                if (valid) {
+                  highlightSquare(square);
+                }
+              }
+            }
+          } else if (xStart < xNew) {
+            if (xStart + (length - 1) < 10) {
+              direction = "S";
+              valid = true;
+              for (let i = 0; i < length; i += 1) {
+                const square = document.getElementById(`${xStart + i}${yNew}`);
+                if (valid) {
+                  highlightSquare(square);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function dragEndEvent() {
+      if (valid) {
+        const highlightSquares = document.querySelectorAll(".drag-valid");
+        highlightSquares.forEach((sq) => {
+          sq.className = "ship";
+        });
+        addShip(xStart, yStart, direction, length);
+        shipsPlaced += 1;
+      }
+    }
+
+    const pSquares = playerBoard.querySelectorAll(".square");
+    pSquares.forEach((square) => {
+      square.addEventListener("dragstart", (e) => {
+        e.stopImmediatePropagation();
+        const location = e.target.id;
+        xStart = Number(location.slice(0, 1));
+        yStart = Number(location.slice(1));
+        length = shipsNeeded[shipsPlaced];
+
+        e.target.classList.add(".drag-valid");
+      });
+      square.addEventListener("dragenter", (e) => {
+        const highlightSquares = document.querySelectorAll(".drag-valid");
+        highlightSquares.forEach((sq) => {
+          sq.classList.remove("drag-valid");
+        });
+        valid = false;
+        e.stopImmediatePropagation();
+        dragEnterEvent(e);
+      });
+      square.addEventListener("dragleave", (e) => {
+        e.stopImmediatePropagation();
+        // dragLeaveEvent(e);
+      });
+    });
+    playerBoard.addEventListener("dragend", (e) => {
+      e.stopImmediatePropagation();
+      dragEndEvent();
+    });
+    playerBoard.addEventListener("drop", (e) => {
+      e.stopImmediatePropagation();
+    });
   };
 
   const receiveAtack = (x, y) => {
@@ -178,6 +301,7 @@ const Gameboard = () => {
     getBoard,
     isComp,
     getActiveShips,
+    placeShips,
   };
 };
 
@@ -197,7 +321,7 @@ const Player = () => {
   const playerTurn = (square) => {
     const location = square.id;
     const x = location.slice(0, 1);
-    const y = location.slice(1);
+    const y = location.slice(1, 2);
     const result = GB.receiveAtack(x, y);
     if (result !== "repeat") {
       square = setSquare(GB, square, x, y);
@@ -209,14 +333,15 @@ const Player = () => {
 };
 
 const gameController = () => {
-  const human = Player();
-  human.GB.addShip(0, 0, "S", 5);
-  human.GB.addShip(6, 0, "E", 4);
-  human.GB.addShip(0, 3, "S", 4);
-  human.GB.addShip(3, 4, "E", 3);
-  human.GB.addShip(9, 9, "W", 3);
-  human.GB.addShip(7, 4, "S", 2);
-  human.GB.addShip(5, 8, "S", 2);
+  const player = Player();
+  const fleet = [5, 4, 4, 3, 3, 2, 2];
+  // player.GB.addShip(0, 0, "S", 5);
+  // player.GB.addShip(6, 0, "E", 4);
+  // player.GB.addShip(0, 3, "S", 4);
+  // player.GB.addShip(3, 4, "E", 3);
+  // player.GB.addShip(9, 9, "W", 3);
+  // player.GB.addShip(7, 4, "S", 2);
+  // player.GB.addShip(5, 8, "S", 2);
 
   const computer = Player();
   while (computer.GB.moreShips()) {
@@ -241,10 +366,8 @@ const gameController = () => {
       size
     );
   }
-  printGame(human.GB);
+  printGame(player.GB);
   printGame(computer.GB);
-
-  const playRound = () => {};
 
   const compBoard = document.querySelector(".comp");
   const compSquares = compBoard.querySelectorAll(".square");
@@ -255,7 +378,7 @@ const gameController = () => {
         compSquares.forEach((sq) => {
           const location = sq.id;
           const x = location.slice(0, 1);
-          const y = location.slice(1);
+          const y = location.slice(1, 2);
           if (computer.GB.getBoard()[x][y] === -9) {
             setSquare(computer.GB, sq, x, y);
           }
@@ -265,14 +388,15 @@ const gameController = () => {
         }
       }
       if (result !== "repeat") {
-        human.compTurn();
-        printGame(human.GB);
-        if (human.GB.getActiveShips() === 0) {
+        player.compTurn();
+        printGame(player.GB);
+        if (player.GB.getActiveShips() === 0) {
           alert("COMPUTER BEATS PUNY HUMAN");
         }
       }
     });
   });
+  player.GB.placeShips(fleet);
 };
 
 gameController();

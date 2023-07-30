@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import setSquare from "./setSquare.js";
 
 export default function printGame(GB) {
@@ -6,13 +7,19 @@ export default function printGame(GB) {
   for (let i = 0; i < 10; i += 1) {
     const row = document.createElement("div");
     row.setAttribute("style", "display: flex;");
+    row.className = "row";
     for (let j = 0; j < 10; j += 1) {
       let square = document.createElement("div");
       square.setAttribute(
         "style",
         "border: 1px solid black; width: 40px; height: 40px;"
       );
-      square.id = `${i}${j}`;
+      if (!GB.isComp()) {
+        square.setAttribute("draggable", "true;");
+        square.id = `${i}${j}`;
+      } else {
+        square.id = `${i}${j}CPU`;
+      }
       square = setSquare(GB, square, i, j);
 
       row.appendChild(square);

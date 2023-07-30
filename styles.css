@@ -2,10 +2,18 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
+.board {
+  margin: 20px;
+}
 
-.empty,
-.ship {
+.empty {
   background-color: rgb(29, 162, 216);
+}
+
+.drag-valid,
+.start {
+  background-color: rgba(255, 0, 0, 0.52);
+  border: 1px dashed red;
 }
 
 .ship {
@@ -24,6 +32,6 @@
   background-color: black;
 }
 
-.board {
-  margin: 20px;
+.drag {
+  pointer-events: none;
 }
