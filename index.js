@@ -37,7 +37,6 @@ const Gameboard = () => {
   };
 
   const addShip = (x, y, direction, size) => {
-    console.log(x, y, direction, size);
     let length = size;
     if (size === 0) {
       comp = true;
@@ -129,7 +128,6 @@ const Gameboard = () => {
       ships[numberOfShips] = Ship(length);
     }
     activeShips = numberOfShips;
-    console.log(ships);
   };
 
   const placeShips = (fleet) => {
@@ -209,13 +207,17 @@ const Gameboard = () => {
     }
 
     function dragEndEvent() {
+      const highlightSquares = document.querySelectorAll(".drag-valid");
       if (valid) {
-        const highlightSquares = document.querySelectorAll(".drag-valid");
         highlightSquares.forEach((sq) => {
           sq.className = "ship";
         });
         addShip(xStart, yStart, direction, length);
         shipsPlaced += 1;
+      } else {
+        highlightSquares.forEach((sq) => {
+          sq.className = "square empty";
+        });
       }
     }
 
