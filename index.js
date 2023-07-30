@@ -44,7 +44,7 @@ const Gameboard = () => {
         length = 5;
       } else if (numberOfShips < 3) {
         length = 4;
-      } else if (numberOfShips < 6) {
+      } else if (numberOfShips < 5) {
         length = 3;
       } else {
         length = 2;
@@ -281,7 +281,7 @@ const Gameboard = () => {
   };
 
   const moreShips = () => {
-    if (numberOfShips < 8) {
+    if (numberOfShips < 7) {
       return true;
     }
     return false;
@@ -305,13 +305,49 @@ const Gameboard = () => {
 const Player = () => {
   const GB = Gameboard();
   GB.initializeBoard();
+  const hit = [];
 
   const compTurn = () => {
     let result;
+    let x;
+    let y;
+    let repeats = 0;
     do {
-      const x = Math.floor(Math.random() * 10);
-      const y = Math.floor(Math.random() * 10);
+      if (hit.length > 0) {
+        const axis = Math.floor(Math.random() * 2);
+        let temp;
+        if (hit[axis] === 0) {
+          temp = 1;
+        } else if (hit[axis] === 9) {
+          temp = 8;
+        } else {
+          const direction = Math.random() - 0.5;
+          if (direction < 0) {
+            temp = hit[axis] - 1;
+          } else {
+            temp = hit[axis] + 1;
+          }
+        }
+        if (axis < 1) {
+          x = temp;
+          y = hit[1];
+        } else {
+          x = hit[0];
+          y = temp;
+        }
+      } else {
+        x = Math.floor(Math.random() * 10);
+        y = Math.floor(Math.random() * 10);
+      }
       result = GB.receiveAtack(x, y);
+      if (result === "hit") {
+        hit.length = 0;
+        hit.push(x, y);
+      } else if (result === "sunk" || repeats === 10) {
+        hit.length = 0;
+      } else if (result === "repeat") {
+        repeats += 1;
+      }
     } while (result === "repeat");
   };
 
@@ -331,7 +367,14 @@ const Player = () => {
 
 const gameController = () => {
   const player = Player();
-  const fleet = [5, 4, 4, 3, 3, 3, 2, 2];
+  const fleet = [5, 4, 4, 3, 3, 2, 2];
+  player.GB.addShip(0, 0, "S", 5);
+  player.GB.addShip(6, 0, "E", 4);
+  player.GB.addShip(0, 3, "S", 4);
+  player.GB.addShip(3, 4, "E", 3);
+  player.GB.addShip(9, 9, "W", 3);
+  player.GB.addShip(7, 4, "S", 2);
+  player.GB.addShip(5, 8, "S", 2);
 
   const computer = Player();
   while (computer.GB.moreShips()) {
@@ -386,7 +429,7 @@ const gameController = () => {
       }
     });
   });
-  player.GB.placeShips(fleet);
+  // player.GB.placeShips(fleet);
 };
 
 gameController();
