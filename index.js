@@ -224,8 +224,8 @@ const Gameboard = () => {
     const pSquares = playerBoard.querySelectorAll(".square");
     pSquares.forEach((square) => {
       square.addEventListener("dragstart", (e) => {
+        e.stopImmediatePropagation();
         if (shipsPlaced < shipsNeeded.length) {
-          e.stopImmediatePropagation();
           const location = e.target.id;
           xStart = Number(location.slice(0, 1));
           yStart = Number(location.slice(1));
@@ -235,25 +235,18 @@ const Gameboard = () => {
         }
       });
       square.addEventListener("dragenter", (e) => {
+        e.stopImmediatePropagation();
         const highlightSquares = document.querySelectorAll(".drag-valid");
         highlightSquares.forEach((sq) => {
           sq.classList.remove("drag-valid");
         });
         valid = false;
-        e.stopImmediatePropagation();
         dragEnterEvent(e);
-      });
-      square.addEventListener("dragleave", (e) => {
-        e.stopImmediatePropagation();
-        // dragLeaveEvent(e);
       });
     });
     playerBoard.addEventListener("dragend", (e) => {
       e.stopImmediatePropagation();
       dragEndEvent();
-    });
-    playerBoard.addEventListener("drop", (e) => {
-      e.stopImmediatePropagation();
     });
   };
 
