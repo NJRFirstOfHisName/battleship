@@ -516,5 +516,16 @@ const gameController = () => {
     });
   });
 };
+document.querySelector(".newGame").addEventListener("click", () => {
+  document.querySelector(".playerContainer").innerHTML = "";
+  document.querySelector(".compContainer").innerHTML = "";
+  gameController();
+});
 
+document.querySelector(".surrender").addEventListener("click", () => {
+  const compShips = document.querySelectorAll(".compShip");
+  compShips.forEach((square) => {
+    square.className = "ship";
+  });
+});
 gameController();

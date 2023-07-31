@@ -35,7 +35,8 @@ h1 {
   margin: 20px;
 }
 
-.empty {
+.empty,
+.compShip {
   background-color: #eaeaea30;
 }
 
