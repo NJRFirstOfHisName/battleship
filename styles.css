@@ -1,3 +1,21 @@
+body {
+  background-image: url("./background.png");
+  color: white;
+  text-align: center;
+}
+
+.row {
+  width: fit-content;
+  background: none;
+}
+
+.gameContainer div div div div {
+  border: 5px solid rgb(29, 162, 216);
+  border-style: inset;
+  /* background: radial-gradient(circle at center, red 40%, #eaeaea44 40%); */
+  /* box-shadow: 10px 10px rgb(29, 162, 216) inset; */
+}
+
 .gameContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -7,21 +25,32 @@
 }
 
 .empty {
-  background-color: rgb(29, 162, 216);
+  background-color: #eaeaea30;
 }
 
 .drag-valid,
 .drag-start {
-  background-color: rgba(255, 0, 0, 0.52);
-  border: 1px dashed red;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 0, 0, 0.52) 40%,
+    #eaeaea30 40%
+  );
+
+  /* background-color: rgba(255, 0, 0, 0.52); */
 }
 
 .ship {
-  background-color: red;
+  background: radial-gradient(circle at center, red 40%, #eaeaea30 40%);
 }
 
 .hit {
-  background-color: rgb(180, 0, 0);
+  background: radial-gradient(
+    circle at center,
+    rgb(180, 0, 0) 40%,
+    #eaeaea30 40%
+  );
+
+  /* background-color: rgb(180, 0, 0); */
 }
 
 .miss {

@@ -12,10 +12,7 @@ export default function printGame(GB) {
     row.className = "row";
     for (let j = 0; j < 10; j += 1) {
       let square = document.createElement("div");
-      square.setAttribute(
-        "style",
-        "border: 1px solid black; width: 40px; height: 40px;"
-      );
+      square.setAttribute("style", "width: 40px; height: 40px;");
       // If the board is for a player, sets the divs so that the ships can be placed.
       if (!GB.isComp()) {
         square.setAttribute("draggable", "true;");
