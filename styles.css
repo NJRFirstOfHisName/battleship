@@ -18,19 +18,17 @@ h1 {
   width: fit-content;
   height: fit-content;
   margin: auto;
+  display: grid;
+  grid-template-areas:
+    "playerHeader compHeader"
+    "playerContainer compContainer";
 }
 
 .gameContainer div div div div {
   border: 5px solid rgb(29, 162, 216);
   border-style: inset;
-  /* background: radial-gradient(circle at center, red 40%, #eaeaea44 40%); */
-  /* box-shadow: 10px 10px rgb(29, 162, 216) inset; */
 }
 
-.gameContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
 .board {
   margin: 20px;
 }
@@ -105,4 +103,30 @@ p {
   width: 80%;
   margin: auto 3em;
   background-color: rgba(0, 0, 0, 0.638);
+}
+
+.playerHeader {
+  grid-area: playerHeader;
+}
+
+.compHeader {
+  grid-area: compHeader;
+}
+
+.playerContainer {
+  grid-area: playerContainer;
+}
+
+.compContainer {
+  grid-area: compContainer;
+}
+
+@media (max-width: 800px) {
+  .gameContainer {
+    grid-template-areas:
+      "compHeader"
+      "compContainer"
+      "playerHeader"
+      "playerContainer";
+  }
 }
