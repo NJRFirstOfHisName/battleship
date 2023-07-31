@@ -1,12 +1,23 @@
 body {
+  font-family: "Courier New", Courier, monospace;
+  font-size: larger;
   background-image: url("./background.png");
   color: white;
   text-align: center;
 }
 
+h1 {
+  margin: 0.3em auto;
+}
+
 .row {
-  width: fit-content;
   background: none;
+}
+
+.gameContainer {
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
 }
 
 .gameContainer div div div div {
@@ -63,4 +74,34 @@ body {
 
 .drag {
   pointer-events: none;
+}
+
+.controlContainer {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  align-items: center;
+}
+
+.buttonContainer {
+  display: grid;
+  gap: 4em;
+  gap: 0px;
+  justify-items: right;
+}
+
+button {
+  font-size: larger;
+  background: none;
+  color: white;
+  border: 2px solid red;
+  border-radius: 2px;
+  width: 7em;
+  padding: 0.3em;
+  margin: 1em;
+}
+
+p {
+  width: 80%;
+  margin: auto 3em;
+  background-color: rgba(0, 0, 0, 0.638);
 }
