@@ -173,10 +173,21 @@ const Gameboard = () => {
       }
     }
 
+    function dragStartEvent(e) {
+      if (shipsPlaced < shipsNeeded.length) {
+        const location = e.target.id;
+        xStart = Number(location.slice(0, 1));
+        yStart = Number(location.slice(1));
+        length = shipsNeeded[shipsPlaced];
+
+        e.target.classList.add("drag-start");
+      }
+    }
+
     // Called whenever a user starts a drag and moves over another div.
     function dragEnterEvent(e) {
       // Takes the id of the div that has been entered and uses it to determine its coordinates.
-      const location = e.target.id;
+      const location = e.id;
       const xNew = Number(location.slice(0, 1));
       const yNew = Number(location.slice(1));
 
@@ -263,35 +274,42 @@ const Gameboard = () => {
     // Grabs all empty divs and adds drag and drop listeners to them.
     const pSquares = playerBoard.querySelectorAll(".square");
     pSquares.forEach((square) => {
-      // When a drag is started, takes the clicked div and saves its location along the x and y axes,
+      // When a drag is started, takes the selected div and saves its location along the x and y axes,
       // then highlights it.
       square.addEventListener("dragstart", (e) => {
-        e.stopImmediatePropagation();
-        if (shipsPlaced < shipsNeeded.length) {
-          const location = e.target.id;
-          xStart = Number(location.slice(0, 1));
-          yStart = Number(location.slice(1));
-          length = shipsNeeded[shipsPlaced];
-
-          e.target.classList.add("drag-start");
-        }
+        e.stopPropagation();
+        dragStartEvent(e);
       });
+      square.addEventListener("touchstart", dragStartEvent);
       // When a new div is dragged over, clears all highlighted divs (except the dragstart) and calls dragEnterEvent.
       square.addEventListener("dragenter", (e) => {
-        e.stopImmediatePropagation();
+        e.stopPropagation();
         const highlightSquares = document.querySelectorAll(".drag-valid");
         highlightSquares.forEach((sq) => {
           sq.classList.remove("drag-valid");
         });
         valid = false;
-        dragEnterEvent(e);
+        dragEnterEvent(e.target);
+      });
+      square.addEventListener("touchmove", (e) => {
+        const highlightSquares = document.querySelectorAll(".drag-valid");
+        highlightSquares.forEach((sq) => {
+          sq.classList.remove("drag-valid");
+        });
+        valid = false;
+        const currentDiv = document.elementFromPoint(
+          e.targetTouches[0].pageX,
+          e.targetTouches[0].pageY
+        );
+        dragEnterEvent(currentDiv);
       });
     });
     // When the drag ends, calls dragEndEvent.
     playerBoard.addEventListener("dragend", (e) => {
-      e.stopImmediatePropagation();
+      e.stopPropagation();
       dragEndEvent();
     });
+    playerBoard.addEventListener("touchend", dragEndEvent);
   };
 
   // Used when one side attacks the other.
