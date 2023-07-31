@@ -186,7 +186,6 @@ const Gameboard = () => {
 
     // Called whenever a user starts a drag and moves over another div.
     function dragEnterEvent(e) {
-      console.log(e);
       // Takes the id of the div that has been entered and uses it to determine its coordinates.
       const location = e.id;
       const xNew = Number(location.slice(0, 1));
@@ -298,7 +297,6 @@ const Gameboard = () => {
           sq.classList.remove("drag-valid");
         });
         valid = false;
-        console.log(e);
         const currentDiv = document.elementFromPoint(
           e.targetTouches[0].clientX,
           e.targetTouches[0].clientY
