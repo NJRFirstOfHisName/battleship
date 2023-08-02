@@ -24,9 +24,14 @@ h1 {
     "playerContainer compContainer";
 }
 
+.row {
+  height: 50px;
+}
+
 .gameContainer div div div div {
   border: 5px solid rgb(29, 162, 216);
   border-style: inset;
+  width: 40px;
 }
 
 .board {
@@ -136,11 +141,26 @@ p {
 }
 
 @media (max-width: 800px) {
+  body {
+    margin: auto;
+  }
+
   .gameContainer {
     grid-template-areas:
       "playerHeader"
       "playerContainer"
       "compHeader"
       "compContainer";
+    width: 100vw;
+  }
+
+  .board div {
+    height: 11vw;
+  }
+
+  .board div div {
+    width: 7vw;
+    border: 1vw solid rgb(29, 162, 216);
+    border-style: inset;
   }
 }
