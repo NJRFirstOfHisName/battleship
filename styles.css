@@ -143,6 +143,8 @@ p {
 @media (max-width: 800px) {
   body {
     margin: auto;
+    width: 100vmin;
+    font-size: large;
   }
 
   .gameContainer {
@@ -151,16 +153,34 @@ p {
       "playerContainer"
       "compHeader"
       "compContainer";
-    width: 100vw;
+    width: 100vmin;
+  }
+
+  .board {
+    margin: 2vmin;
   }
 
   .board div {
-    height: 11vw;
+    height: 9vmin;
   }
 
-  .board div div {
-    width: 7vw;
-    border: 1vw solid rgb(29, 162, 216);
+  .gameContainer div div div div {
+    width: 8vmin;
+    border: 1vmin solid rgb(29, 162, 216);
     border-style: inset;
+  }
+
+  .controlContainer {
+    display: block;
+    width: 100vmin;
+  }
+
+  .buttonContainer {
+    display: flex;
+  }
+
+  p {
+    width: 90%;
+    margin: auto;
   }
 }
