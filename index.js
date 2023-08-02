@@ -507,8 +507,7 @@ async function gameController() {
     document.querySelector(".playerHeader").firstElementChild;
   playerHeader.innerText = "YOUR BOARD";
   const compHeader = document.querySelector(".compHeader").firstElementChild;
-  compHeader.innerText = "THE DASTARDLY COMPUTER";
-  const covers = document.querySelectorAll(".cover");
+  compHeader.innerText = "THE DASTARDLY CPU";
 
   // fleet controls the size and number of the player's ships.
   const fleet = [5, 4, 4, 3, 3, 2, 2];
@@ -516,13 +515,13 @@ async function gameController() {
   const player = Player();
   printGame(player.GB);
 
-  // player.GB.addShip(0, 0, "S", 5);
-  // player.GB.addShip(6, 0, "E", 4);
-  // player.GB.addShip(0, 3, "S", 4);
-  // player.GB.addShip(3, 4, "E", 3);
-  // player.GB.addShip(9, 9, "W", 3);
-  // player.GB.addShip(7, 4, "S", 2);
-  // player.GB.addShip(5, 8, "S", 2);
+  player.GB.addShip(0, 0, "S", 5);
+  player.GB.addShip(6, 0, "E", 4);
+  player.GB.addShip(0, 3, "S", 4);
+  player.GB.addShip(3, 4, "E", 3);
+  player.GB.addShip(9, 9, "W", 3);
+  player.GB.addShip(7, 4, "S", 2);
+  player.GB.addShip(5, 8, "S", 2);
 
   // Creates a Player for the CPU and generates its ships.
   const computer = Player();
@@ -557,12 +556,22 @@ async function gameController() {
   await player.GB.allPlayerShips();
   player.GB.listShips();
   computer.GB.listShips();
+  compBoard.scrollIntoView({
+    behavior: "auto",
+    block: "center",
+    inline: "center",
+  });
 
   // Adds EventListeners to all unattacked divs on the computer's board.
-
+  let covers = document.querySelectorAll(".cover");
   const compSquares = compBoard.querySelectorAll(".square");
   compSquares.forEach((square) => {
     square.addEventListener("click", () => {
+      compBoard.scrollIntoView({
+        behavior: "auto",
+        block: "nearest",
+        inline: "nearest",
+      });
       // When a listener is triggered, attacks the computer's board at the player's selected point.
       // If the player somehow manages to attack an attacked space, repeats until a fresh one is clicked.
       const result = computer.playerTurn(square);
@@ -580,16 +589,20 @@ async function gameController() {
         // If the last CPU ship has been sunken, congratulates the player!
         if (computer.GB.getActiveShips() === 0) {
           playerHeader.innerText = "YOU WIN";
-          covers.forEach((cover) => cover.classList.remove("hide"));
+          compHeader.innerText = "THE CPU IS DEFEATED";
+          covers.forEach((cover) => {
+            cover.classList.remove("hide");
+          });
         }
-      }
-      if (result !== "repeat") {
+      } else if (result !== "repeat") {
         // After the player has taken a valid turn, the computer takes its turn.
         player.compTurn();
         printGame(player.GB);
+        covers = document.querySelectorAll(".cover");
         player.GB.listShips();
         if (player.GB.getActiveShips() === 0) {
           playerHeader.innerText = "YOU LOSE";
+          compHeader.innerText = "THEY MUST NOT WIN";
           covers.forEach((cover) => cover.classList.remove("hide"));
         }
       }
@@ -599,8 +612,14 @@ async function gameController() {
 
 // Creates an entirely new game instance when the New Game button is clicked.
 document.querySelector(".newGame").addEventListener("click", () => {
-  document.querySelector(".playerContainer").innerHTML = "";
+  const playerContainter = document.querySelector(".playerContainer");
+  playerContainter.innerHTML = "";
   document.querySelector(".compContainer").innerHTML = "";
+  playerContainter.scrollIntoView({
+    behavior: "auto",
+    block: "center",
+    inline: "center",
+  });
   gameController();
 });
 
@@ -611,8 +630,13 @@ document.querySelector(".surrender").addEventListener("click", () => {
     square.className = "ship";
   });
   const covers = document.querySelectorAll(".cover");
+  console.log(covers);
   covers.forEach((cover) => cover.classList.remove("hide"));
   const compBoard = document.querySelector(".comp");
-  compBoard.scrollIntoView();
+  compBoard.scrollIntoView({
+    behavior: "auto",
+    block: "center",
+    inline: "center",
+  });
 });
 gameController();

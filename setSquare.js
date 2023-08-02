@@ -18,7 +18,7 @@ export default function setSquare(GB, square, x, y) {
       default:
         // Masks CPU ships from the player
         if (GB.isComp()) {
-          newSquare.className = "square compShip";
+          newSquare.className = "square ship";
         } else {
           newSquare.className = "square ship";
         }
