@@ -515,13 +515,13 @@ async function gameController() {
   const player = Player();
   printGame(player.GB);
 
-  player.GB.addShip(0, 0, "S", 5);
-  player.GB.addShip(6, 0, "E", 4);
-  player.GB.addShip(0, 3, "S", 4);
-  player.GB.addShip(3, 4, "E", 3);
-  player.GB.addShip(9, 9, "W", 3);
-  player.GB.addShip(7, 4, "S", 2);
-  player.GB.addShip(5, 8, "S", 2);
+  // player.GB.addShip(0, 0, "S", 5);
+  // player.GB.addShip(6, 0, "E", 4);
+  // player.GB.addShip(0, 3, "S", 4);
+  // player.GB.addShip(3, 4, "E", 3);
+  // player.GB.addShip(9, 9, "W", 3);
+  // player.GB.addShip(7, 4, "S", 2);
+  // player.GB.addShip(5, 8, "S", 2);
 
   // Creates a Player for the CPU and generates its ships.
   const computer = Player();
@@ -612,10 +612,10 @@ async function gameController() {
 
 // Creates an entirely new game instance when the New Game button is clicked.
 document.querySelector(".newGame").addEventListener("click", () => {
-  const playerContainter = document.querySelector(".playerContainer");
-  playerContainter.innerHTML = "";
+  const playerContainer = document.querySelector(".playerContainer");
+  playerContainer.innerHTML = "";
   document.querySelector(".compContainer").innerHTML = "";
-  playerContainter.scrollIntoView({
+  playerContainer.scrollIntoView({
     behavior: "auto",
     block: "center",
     inline: "center",
