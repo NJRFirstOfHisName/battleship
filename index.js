@@ -174,6 +174,7 @@ const Gameboard = () => {
     }
   }
 
+  // Used to print the remaining ships for each side at the top of the screen.
   function listShips() {
     let header;
     if (comp) {
@@ -598,6 +599,7 @@ async function gameController() {
   });
 }
 
+// Creates an entirely new game instance when the New Game button is clicked.
 document.querySelector(".newGame").addEventListener("click", () => {
   document.querySelector(".playerContainer").innerHTML = "";
   const cover = document.createElement("div");
@@ -607,6 +609,7 @@ document.querySelector(".newGame").addEventListener("click", () => {
   gameController();
 });
 
+// Reveals the computer's ships and blocks the computer's board when Surrender button is clicked.
 document.querySelector(".surrender").addEventListener("click", () => {
   const compShips = document.querySelectorAll(".compShip");
   compShips.forEach((square) => {
