@@ -38,6 +38,12 @@ export default function printGame(GB) {
     container = document.querySelector(".playerContainer");
   }
 
+  // Creates a hidden cover that is revealed when a game finishes to block input and
+  // give a visual indication that the game has ended.
+  const cover = document.createElement("div");
+  cover.className = "cover hide";
+  prtBoard.append(cover);
+
   // Clears the old board before printing the updated one.
   container.innerHTML = "";
   container.appendChild(prtBoard);

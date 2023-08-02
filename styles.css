@@ -36,6 +36,7 @@ h1 {
 
 .board {
   margin: 20px;
+  position: relative;
 }
 
 .empty,
@@ -121,6 +122,7 @@ p {
 .playerContainer {
   grid-area: playerContainer;
   touch-action: none;
+  position: relative;
 }
 
 .compContainer {
@@ -134,6 +136,8 @@ p {
   width: 100%;
   top: 0;
   left: 0;
+  text-align: center;
+  background-color: rgba(0, 110, 255, 0.222);
 }
 
 .hide {

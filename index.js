@@ -508,9 +508,7 @@ async function gameController() {
   playerHeader.innerText = "YOUR BOARD";
   const compHeader = document.querySelector(".compHeader").firstElementChild;
   compHeader.innerText = "THE DASTARDLY COMPUTER";
-  const cover = document.querySelector(".cover");
-  cover.classList.add("hide");
-  console.log(cover);
+  const covers = document.querySelectorAll(".cover");
 
   // fleet controls the size and number of the player's ships.
   const fleet = [5, 4, 4, 3, 3, 2, 2];
@@ -554,14 +552,14 @@ async function gameController() {
     );
   }
   printGame(computer.GB);
+  const compBoard = document.querySelector(".comp");
   player.GB.placeShips(fleet);
   await player.GB.allPlayerShips();
   player.GB.listShips();
   computer.GB.listShips();
 
   // Adds EventListeners to all unattacked divs on the computer's board.
-  const compBoard = document.querySelector(".comp");
-  compBoard.parentElement.append(cover);
+
   const compSquares = compBoard.querySelectorAll(".square");
   compSquares.forEach((square) => {
     square.addEventListener("click", () => {
@@ -582,7 +580,7 @@ async function gameController() {
         // If the last CPU ship has been sunken, congratulates the player!
         if (computer.GB.getActiveShips() === 0) {
           playerHeader.innerText = "YOU WIN";
-          cover.classList.remove("hide");
+          covers.forEach((cover) => cover.classList.remove("hide"));
         }
       }
       if (result !== "repeat") {
@@ -592,7 +590,7 @@ async function gameController() {
         player.GB.listShips();
         if (player.GB.getActiveShips() === 0) {
           playerHeader.innerText = "YOU LOSE";
-          cover.classList.remove("hide");
+          covers.forEach((cover) => cover.classList.remove("hide"));
         }
       }
     });
@@ -602,9 +600,6 @@ async function gameController() {
 // Creates an entirely new game instance when the New Game button is clicked.
 document.querySelector(".newGame").addEventListener("click", () => {
   document.querySelector(".playerContainer").innerHTML = "";
-  const cover = document.createElement("div");
-  cover.className = "cover";
-  document.querySelector(".playerContainer").append(cover);
   document.querySelector(".compContainer").innerHTML = "";
   gameController();
 });
@@ -615,7 +610,9 @@ document.querySelector(".surrender").addEventListener("click", () => {
   compShips.forEach((square) => {
     square.className = "ship";
   });
-  const cover = document.querySelector(".cover");
-  cover.classList.remove("hide");
+  const covers = document.querySelectorAll(".cover");
+  covers.forEach((cover) => cover.classList.remove("hide"));
+  const compBoard = document.querySelector(".comp");
+  compBoard.scrollIntoView();
 });
 gameController();
