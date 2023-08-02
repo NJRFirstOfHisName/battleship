@@ -20,7 +20,9 @@ const Ship = (size) => {
     }
     return sunk;
   };
-  return { hit, isSunk };
+
+  const getLength = () => length;
+  return { hit, isSunk, getLength };
 };
 
 // Creates a Gameboard object. One is given to each player and is used to track the status of each player's game.
@@ -152,6 +154,42 @@ const Gameboard = () => {
     activeShips = numberOfShips;
   };
 
+  // Used when for generating CPU ships
+  const moreShips = () => {
+    if (numberOfShips < 7) {
+      return true;
+    }
+    return false;
+  };
+
+  // Used when placing player ships. Makes the page wait until all ships are placed before continuing.
+  function allPlayerShips() {
+    return new Promise(APS);
+
+    function APS(resolve) {
+      if (numberOfShips === 7) {
+        resolve(true);
+      }
+      setTimeout(APS.bind(this, resolve), 500);
+    }
+  }
+
+  function listShips() {
+    let header;
+    if (comp) {
+      header = document.querySelector(".compHeader");
+    } else {
+      header = document.querySelector(".playerHeader");
+    }
+    const shipsList = header.querySelector(".shipsList");
+    shipsList.innerText = "Remaining ships:";
+    ships.forEach((ship) => {
+      if (!ship.isSunk()) {
+        shipsList.innerText += ` ${ship.getLength()}`;
+      }
+    });
+  }
+
   // Used to place the player's ships in the DOM.
   const placeShips = (fleet) => {
     const shipsNeeded = fleet;
@@ -174,20 +212,40 @@ const Gameboard = () => {
     }
 
     function dragStartEvent(e) {
-      if (shipsPlaced < shipsNeeded.length) {
-        const location = e.target.id;
-        xStart = Number(location.slice(0, 1));
-        yStart = Number(location.slice(1));
-        length = shipsNeeded[shipsPlaced];
+      if (e.target.classList.contains("empty")) {
+        if (shipsPlaced < shipsNeeded.length) {
+          const location = e.target.id;
+          xStart = Number(location.slice(0, 1));
+          yStart = Number(location.slice(1));
+          length = shipsNeeded[shipsPlaced];
 
-        e.target.classList.add("drag-start");
+          e.target.classList.add("drag-start");
+        }
       }
     }
 
-    // Called whenever a user starts a drag and moves over another div.
+    // Called whenever a user drags over another div.
     function dragEnterEvent(e) {
+      e.stopPropagation();
+
+      // Clears all previously hightlighted squares.
+      const highlightSquares = document.querySelectorAll(".drag-valid");
+      highlightSquares.forEach((sq) => {
+        sq.classList.remove("drag-valid");
+      });
+      valid = false;
+
       // Takes the id of the div that has been entered and uses it to determine its coordinates.
-      const location = e.id;
+      let ev;
+      if (e.type === "dragenter") {
+        ev = e.target;
+      } else if (e.type === "touchmove") {
+        ev = document.elementFromPoint(
+          e.targetTouches[0].clientX,
+          e.targetTouches[0].clientY
+        );
+      }
+      const location = ev.id;
       const xNew = Number(location.slice(0, 1));
       const yNew = Number(location.slice(1));
 
@@ -250,7 +308,8 @@ const Gameboard = () => {
     }
 
     /* Called when the user releases a drag. If (valid), indicating that the ship is in a valid location, 
-     turns all highlighted divs into ships, then sends the ship to Gameboard. */
+     turns all highlighted divs into ships, then sends the ship to Gameboard. If all ships have been
+     placed, removes all event listeners. */
     function dragEndEvent() {
       const highlightSquares = document.querySelectorAll(".drag-valid");
       const startSquare = document.querySelector(".drag-start");
@@ -269,46 +328,39 @@ const Gameboard = () => {
         });
         startSquare.className = "square empty";
       }
+
+      if (shipsPlaced === fleet.length) {
+        removeEventListeners();
+      }
     }
+
+    // Removes all event listeners for placing ships.
+    const removeEventListeners = () => {
+      const pSquares = playerBoard.querySelectorAll(".square");
+      pSquares.forEach((square) => {
+        square.setAttribute("draggable", "false");
+        square.removeEventListener("dragstart", dragStartEvent);
+        square.removeEventListener("touchstart", dragStartEvent);
+        square.removeEventListener("dragenter", dragEnterEvent);
+        square.removeEventListener("touchmove", dragEnterEvent);
+      });
+      playerBoard.removeEventListener("dragend", dragEndEvent);
+      playerBoard.removeEventListener("touchend", dragEndEvent);
+    };
 
     // Grabs all empty divs and adds drag and drop listeners to them.
     const pSquares = playerBoard.querySelectorAll(".square");
     pSquares.forEach((square) => {
       // When a drag is started, takes the selected div and saves its location along the x and y axes,
       // then highlights it.
-      square.addEventListener("dragstart", (e) => {
-        e.stopPropagation();
-        dragStartEvent(e);
-      });
+      square.addEventListener("dragstart", dragStartEvent);
       square.addEventListener("touchstart", dragStartEvent);
-      // When a new div is dragged over, clears all highlighted divs (except the dragstart) and calls dragEnterEvent.
-      square.addEventListener("dragenter", (e) => {
-        e.stopPropagation();
-        const highlightSquares = document.querySelectorAll(".drag-valid");
-        highlightSquares.forEach((sq) => {
-          sq.classList.remove("drag-valid");
-        });
-        valid = false;
-        dragEnterEvent(e.target);
-      });
-      square.addEventListener("touchmove", (e) => {
-        const highlightSquares = document.querySelectorAll(".drag-valid");
-        highlightSquares.forEach((sq) => {
-          sq.classList.remove("drag-valid");
-        });
-        valid = false;
-        const currentDiv = document.elementFromPoint(
-          e.targetTouches[0].clientX,
-          e.targetTouches[0].clientY
-        );
-        dragEnterEvent(currentDiv);
-      });
+      // When a new div is dragged over calls dragEnterEvent.
+      square.addEventListener("dragenter", dragEnterEvent);
+      square.addEventListener("touchmove", dragEnterEvent);
     });
     // When the drag ends, calls dragEndEvent.
-    playerBoard.addEventListener("dragend", (e) => {
-      e.stopPropagation();
-      dragEndEvent();
-    });
+    playerBoard.addEventListener("dragend", dragEndEvent);
     playerBoard.addEventListener("touchend", dragEndEvent);
   };
 
@@ -352,14 +404,6 @@ const Gameboard = () => {
     return result;
   };
 
-  // Used when generating the CPU board to see if more ships are needed.
-  const moreShips = () => {
-    if (numberOfShips < 7) {
-      return true;
-    }
-    return false;
-  };
-
   const getBoard = () => board;
   const isComp = () => comp;
   const getActiveShips = () => activeShips;
@@ -372,6 +416,8 @@ const Gameboard = () => {
     isComp,
     getActiveShips,
     placeShips,
+    allPlayerShips,
+    listShips,
   };
 };
 
@@ -455,13 +501,21 @@ const Player = () => {
 };
 
 // Initializes and controls the game flow.
-const gameController = () => {
+async function gameController() {
+  const playerHeader =
+    document.querySelector(".playerHeader").firstElementChild;
+  playerHeader.innerText = "YOUR BOARD";
+  const compHeader = document.querySelector(".compHeader").firstElementChild;
+  compHeader.innerText = "THE DASTARDLY COMPUTER";
+  const cover = document.querySelector(".cover");
+  cover.classList.add("hide");
+  console.log(cover);
+
   // fleet controls the size and number of the player's ships.
   const fleet = [5, 4, 4, 3, 3, 2, 2];
   // Creates a Player for the player, prints their empty board, and allows them to place their ships.
   const player = Player();
   printGame(player.GB);
-  player.GB.placeShips(fleet);
 
   // player.GB.addShip(0, 0, "S", 5);
   // player.GB.addShip(6, 0, "E", 4);
@@ -499,9 +553,14 @@ const gameController = () => {
     );
   }
   printGame(computer.GB);
+  player.GB.placeShips(fleet);
+  await player.GB.allPlayerShips();
+  player.GB.listShips();
+  computer.GB.listShips();
 
   // Adds EventListeners to all unattacked divs on the computer's board.
   const compBoard = document.querySelector(".comp");
+  compBoard.parentElement.append(cover);
   const compSquares = compBoard.querySelectorAll(".square");
   compSquares.forEach((square) => {
     square.addEventListener("click", () => {
@@ -518,24 +577,32 @@ const gameController = () => {
             setSquare(computer.GB, sq, x, y);
           }
         });
+        computer.GB.listShips();
         // If the last CPU ship has been sunken, congratulates the player!
         if (computer.GB.getActiveShips() === 0) {
-          alert("Man triumphs over machine!");
+          playerHeader.innerText = "YOU WIN";
+          cover.classList.remove("hide");
         }
       }
       if (result !== "repeat") {
         // After the player has taken a valid turn, the computer takes its turn.
         player.compTurn();
         printGame(player.GB);
+        player.GB.listShips();
         if (player.GB.getActiveShips() === 0) {
-          alert("COMPUTER BEATS PUNY HUMAN");
+          playerHeader.innerText = "YOU LOSE";
+          cover.classList.remove("hide");
         }
       }
     });
   });
-};
+}
+
 document.querySelector(".newGame").addEventListener("click", () => {
   document.querySelector(".playerContainer").innerHTML = "";
+  const cover = document.createElement("div");
+  cover.className = "cover";
+  document.querySelector(".playerContainer").append(cover);
   document.querySelector(".compContainer").innerHTML = "";
   gameController();
 });
@@ -545,5 +612,7 @@ document.querySelector(".surrender").addEventListener("click", () => {
   compShips.forEach((square) => {
     square.className = "ship";
   });
+  const cover = document.querySelector(".cover");
+  cover.classList.remove("hide");
 });
 gameController();

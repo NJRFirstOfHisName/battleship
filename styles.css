@@ -120,14 +120,27 @@ p {
 
 .compContainer {
   grid-area: compContainer;
+  position: relative;
+}
+
+.cover {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.hide {
+  display: none;
 }
 
 @media (max-width: 800px) {
   .gameContainer {
     grid-template-areas:
-      "compHeader"
-      "compContainer"
       "playerHeader"
-      "playerContainer";
+      "playerContainer"
+      "compHeader"
+      "compContainer";
   }
 }
