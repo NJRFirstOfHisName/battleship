@@ -515,14 +515,6 @@ async function gameController() {
   const player = Player();
   printGame(player.GB);
 
-  // player.GB.addShip(0, 0, "S", 5);
-  // player.GB.addShip(6, 0, "E", 4);
-  // player.GB.addShip(0, 3, "S", 4);
-  // player.GB.addShip(3, 4, "E", 3);
-  // player.GB.addShip(9, 9, "W", 3);
-  // player.GB.addShip(7, 4, "S", 2);
-  // player.GB.addShip(5, 8, "S", 2);
-
   // Creates a Player for the CPU and generates its ships.
   const computer = Player();
   while (computer.GB.moreShips()) {
@@ -639,4 +631,5 @@ document.querySelector(".surrender").addEventListener("click", () => {
     inline: "center",
   });
 });
+
 gameController();
