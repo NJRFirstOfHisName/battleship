@@ -56,13 +56,17 @@ h1 {
 }
 
 .ship {
-  background: radial-gradient(circle at center, red 40%, #eaeaea30 40%);
+  background: radial-gradient(
+    circle at center,
+    rgb(255, 0, 0) 40%,
+    #eaeaea30 40%
+  );
 }
 
 .hit {
   background: radial-gradient(
     circle at center,
-    rgb(180, 0, 0) 40%,
+    rgb(119, 1, 1) 40%,
     #eaeaea30 40%
   );
 
