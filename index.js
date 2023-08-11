@@ -622,7 +622,6 @@ document.querySelector(".surrender").addEventListener("click", () => {
     square.className = "ship";
   });
   const covers = document.querySelectorAll(".cover");
-  console.log(covers);
   covers.forEach((cover) => cover.classList.remove("hide"));
   const compBoard = document.querySelector(".comp");
   compBoard.scrollIntoView({
